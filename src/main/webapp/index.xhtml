@@ -1,0 +1,307 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
+    <title>Fruchtkorb IT GmbH Tickets</title>
+</h:head>
+<h:body>
+    <!-- Kopfzeile mit Grafik und Anschrift -->
+    <div style="display: -webkit-flex">
+        <h:graphicImage value="früchte.png" width="800px"/>
+        <p:divider layout="vertical"/>
+        <div class="zentrieren" style="width: 1000px">
+            <h1>Fruchtkorb IT GmbH</h1>
+            <h2>Freche Fruchtstraße 77</h2>
+            <h3>25077 Fruchthausen</h3>
+        </div>
+    </div>
+    <p:divider/>
+    <!--Menübar -->
+    <div class="card" style="margin-top: 30px; height: 25px">
+        <h:form id="anmelden">
+            <p:menubar>
+                <p:submenu rendered="#{ticketController.rollenRender.requirementsEngineer}" label="Anforderungen"
+                           icon="pi pi-fw pi-file">
+                    <p:menuitem value="Neu" icon="pi pi-fw pi-plus" onclick="PF('anforderung').show()"/>
+                </p:submenu>
+                <p:submenu rendered="#{ticketController.rollenRender.testfallErsteller}" label="Testfall"
+                           icon="pi pi-fw pi-pencil">
+                    <p:menuitem value="Neuer Testfall" icon="pi pi-fw pi-align-left"
+                                onclick="PF('neuertestfall').show()"/>
+                </p:submenu>
+                <p:submenu rendered="#{ticketController.rollenRender.testManager}" label="Testlauf"
+                           icon="pi pi-fw pi-file">
+                    <p:menuitem value="Neuer Testlauf" icon="pi pi-fw pi-align-left"
+                                onclick="PF('neuertestlauf').show()"/>
+                </p:submenu>
+                <p:submenu rendered="#{ticketController.rollenRender.requirementsEngineer}" label="Benutzer"
+                           icon="pi pi-fw pi-user">
+                    <p:menuitem value="Neu Benutzer" icon="pi pi-fw pi-user-plus" onclick="PF('benutzer').show()"/>
+                </p:submenu>
+                <p:divider layout="vertical"/>
+                <p:menuitem>
+                    <div>
+                        <h:form>
+                            <p:outputLabel value="E-Mail">
+                                <div class="ui-input-icon-right ui-float-label">
+                                    <i class="pi pi-user"/>
+                                    <p:inputText id="vorname" value="#{ticketController.tmpBenutzer.email}"/>
+                                    <p:outputLabel for="@previous" value="Username"/>
+                                </div>
+                            </p:outputLabel>
+                            <p:outputLabel style="margin-left: 30px" value="Passwort">
+                                <div class="ui-input-icon-right ui-float-label">
+                                    <p:password toggleMask="true" redisplay="true"
+                                                value="#{ticketController.tmpBenutzer.passwort}"/>
+                                    <p:outputLabel style="text-align: right" for="@previous"
+                                                   value="Passwort eingeben..."/>
+                                </div>
+                            </p:outputLabel>
+                        </h:form>
+                    </div>
+                </p:menuitem>
+                <p:menuitem value="Login" icon="pi pi-fw pi-power-off" action="#{ticketController.login()}"
+                            update="angemeldet anmelden anforderungen"/>
+            </p:menubar>
+        </h:form>
+    </div>
+    <!--Dialog Benutzer anlegen-->
+    <h:form id="userAnlegen">
+        <p:dialog header="Neuer User anlegen" widgetVar="benutzer" minHeight="1000" width="350" showEffect="fade">
+            <p:outputPanel class="ui-fluid">
+                <div class="p-field">
+                    <h:form>
+                        <p:outputLabel style="margin: 10px">Vorname User</p:outputLabel>
+                        <p:inputText style="margin: 10px" value="#{ticketController.benutzer.vorName}"/>
+                        <p:outputLabel style="margin: 10px">Nachname User</p:outputLabel>
+                        <p:inputText style="margin: 10px" value="#{ticketController.benutzer.nachname}"/>
+                        <p:outputLabel style="margin: 10px">Passwort</p:outputLabel>
+                        <p:inputText style="margin: 10px" value="#{ticketController.benutzer.passwort}"/>
+                        <p:outputLabel style="margin: 10px">E-Mail Adresse</p:outputLabel>
+                        <p:inputText style="margin: 10px" value="#{ticketController.benutzer.email}"/>
+                        <p:outputLabel style="margin: 10px">Welche Rolle erhält der neue User?</p:outputLabel>
+                        <p:selectOneMenu style="margin: 10px" id="option" value="#{ticketController.benutzer.rolle}">
+                            <f:selectItem itemLabel="Requirements Engineer" itemValue="Requirements Engineer"/>
+                            <f:selectItem itemLabel="Testmanager" itemValue="Testmanager"/>
+                            <f:selectItem itemLabel="Testfallersteller" itemValue="Testfallersteller"/>
+                            <f:selectItem itemLabel="Tester" itemValue="Tester"/>
+                        </p:selectOneMenu>
+                    </h:form>
+                </div>
+            </p:outputPanel>
+            <f:facet name="footer">
+                <p:commandButton value="Speichern" icon="pi pi-check" styleClass="ui-button-flat p-mr-2"
+                                 style="width: 6rem"
+                                 action="#{ticketController.benutzerHinzufügen()}" onclick="PF('userAnlegen').hide()"
+                                 update="userAnlegen">
+                </p:commandButton>
+                <p:commandButton type="button" value="Cancel" icon="pi pi-times" styleClass="ui-button-secondary"
+                                 style="width: 10rem" onclick="PF('benutzer').hide()"/>
+            </f:facet>
+        </p:dialog>
+    </h:form>
+    <!-- Dialoge für Anforderung -->
+    <!-- Anforderung neu Anlegen -->
+    <h:form id="neueAnforderung">
+        <p:dialog header="Neue Anforderung" widgetVar="anforderung" minHeight="1000" width="350" showEffect="fade">
+            <p:outputPanel class="ui-fluid">
+                <div class="p-field">
+                    <h:form>
+                        <p:outputLabel>Name der Anforderung</p:outputLabel>
+                        <p:inputText value="#{ticketController.anforderung.text}"/>
+                        <p:outputLabel>Beschreibung</p:outputLabel>
+                        <p:inputText value="#{ticketController.anforderung.beschreibung}"/>
+                    </h:form>
+                </div>
+            </p:outputPanel>
+            <f:facet name="footer">
+                <p:commandButton value="Neue Anforderung" icon="pi pi-check" styleClass="ui-button-flat p-mr-2"
+                                 style="width: 100%"
+                                 action="#{ticketController.anforderungHinzufügen()}"
+                                 onclick="PF('neueAnforderung').hide()" update="anforderungen">
+                </p:commandButton>
+            </f:facet>
+        </p:dialog>
+    </h:form>
+    <!--Anforderung aktuallisieren -->
+    <h:form id="anforderungAktuallisieren">
+        <p:dialog header="Anforderung aktuallisieren" widgetVar="anforderungakt" minHeight="1000" width="350"
+                  showEffect="fade">
+            <p:outputPanel class="ui-fluid">
+                <div class="p-field">
+                    <h:form>
+                        <p:outputLabel>Name der Anforderung</p:outputLabel>
+                        <p:inputText value="#{ticketController.anforderung.text}"/>
+                        <p:outputLabel>Beschreibung</p:outputLabel>
+                        <p:inputText value="#{ticketController.anforderung.beschreibung}"/>
+                    </h:form>
+                </div>
+            </p:outputPanel>
+            <f:facet name="footer">
+                <p:commandButton value="Anforderung Aktuallisieren" icon="pi pi-check"
+                                 styleClass="ui-button-flat p-mr-2" style="width: 100%"
+                                 action="#{ticketController.anforderungAktuallisieren()}"
+                                 onclick="PF('neueAnforderung').hide()"/>
+            </f:facet>
+        </p:dialog>
+    </h:form>
+    <!-- Dialog für Testfall-->
+    <h:form id="neuerTestfall"
+            rendered="#{ticketController.rollenRender.testfallErsteller or ticketController.rollenRender.tester}">
+        <p:dialog header="Neuer Testfall für Anforderung: #{ticketController.anforderung.text}"
+                  widgetVar="neuertestfall" minHeight="1000" width="500" showEffect="fade">
+            <p:outputPanel class="ui-fluid">
+                <div class="p-field">
+                    <h:form>
+                        <p:outputLabel rendered="#{ticketController.rollenRender.testfallErsteller}" style="margin-top: 15px">Name des Testfalls</p:outputLabel>
+                        <p:inputText rendered="#{ticketController.rollenRender.testfallErsteller}" style="margin-top: 10px" value="#{ticketController.testfall.testfallName}"/>
+                        <p:outputLabel rendered="#{ticketController.rollenRender.tester}" style="margin-top: 15px">Ergebnis</p:outputLabel>
+                        <p:inputTextarea rendered="#{ticketController.rollenRender.tester}" style="margin-top: 10px"
+                                         value="#{ticketController.testfall.ergebnis}"/>
+                    </h:form>
+                </div>
+            </p:outputPanel>
+            <f:facet name="footer">
+                <p:commandButton value="Neu/Aktuallisieren" icon="pi pi-check" styleClass="ui-button-flat p-mr-2"
+                                 style="width: 100%"
+                                 action="#{ticketController.testfallHinzufügen()}" onclick="PF('neuertestfall').hide()"
+                                 update="testfälle testeraufgaben neuerTestfall"/>
+            </f:facet>
+        </p:dialog>
+    </h:form>
+    <!-- Dialog für Testlauf-->
+    <h:form id="testlauf" rendered="#{ticketController.rollenRender.testManager}">
+        <p:dialog header="Neuen Testlauf erstellen" widgetVar="neuertestlauf" minHeight="1000" width="350"
+                  showEffect="fade">
+            <p:outputPanel class="ui-fluid">
+                <div class="p-field">
+                    <h:form>
+                        <p:outputLabel>Name des Testlaufs</p:outputLabel>
+                        <p:inputText style="margin-top: 10px" value="#{ticketController.testlauf.testlaufName}"/>
+                        <p:outputLabel style="margin-top: 15px">Datum des Testlaufs</p:outputLabel>
+                        <p:datePicker style="margin-top: 10" value="#{ticketController.testlauf.testlaufDatum}"/>
+                        <p:outputLabel style="margin-top: 15px">Benutzer dem Testlauf hinzufügen</p:outputLabel>
+                        <p:selectOneMenu style="margin-top: 10px" value="#{ticketController.tester.vorName}">
+                            <f:selectItem itemLabel="Benutzer" itemValue="Benutzer" noSelectionOption="true"/>
+                            <f:selectItems value="#{ticketController.tester()}"
+                                           actionListener="#{ticketController.tester.vorName}"/>
+                        </p:selectOneMenu>
+                    </h:form>
+                </div>
+            </p:outputPanel>
+            <f:facet name="footer">
+                <p:commandButton value="Neu/Aktuallisieren" icon="pi pi-check" styleClass="ui-button-flat p-mrm2"
+                                 style="width: 100%"
+                                 action="#{ticketController.testlaufHinzufügen()}" onclick="PF('neuertestlauf').hide()"
+                                 update="testläufe testlauf"/>
+            </f:facet>
+        </p:dialog>
+    </h:form>
+    <p:divider align="center" style="margin-top: 75px; text-align: center" >
+        <p:outputLabel id="angemeldet" style="text-align: center"
+                       value="Hallo  #{ticketController.benutzer.vorName}  du bist angemeldet als  #{ticketController.benutzer.rolle}">
+            <br></br>
+            <b>Aktuelle To do`s</b>
+        </p:outputLabel>
+    </p:divider>
+    <!--Alle Tabellen  je nach Nutzerrolle gerendert oder nicht -->
+    <div class="card" style="margin-top: 30px;margin-left: 30px;margin-right: 30px;display:-webkit-flex">
+        <!-- Requirements Engineer/ Anforderungen Tabelle-->
+        <div style="margin-left: 50px">
+            <h:form rendered="#{ticketController.rollenRender.requirementsEngineer or ticketController.rollenRender.testfallErsteller or ticketController.rollenRender.testManager}"
+                    id="anforderungen">
+                <p:dataTable var="anforderung" value="#{ticketController.tickets}" selectionMode="single"
+                             rowKey="#{anforderung.id}">
+                    <p:ajax update="anforderungAktuallisieren neuerTestfall testfälle" event="rowSelect"
+                            listener="#{ticketController.welchesTicket}"/>
+                    <f:facet name="header">Anforderungen</f:facet>
+                    <p:column>
+                        <f:facet name="header">Name der Anforderung</f:facet>
+                        <h:form>
+                            <h:outputText value="#{anforderung.text}"/>
+                        </h:form>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">Beschreibung der Anforderung</f:facet>
+                        <h:form>
+                            <h:outputText value="#{anforderung.beschreibung}"/>
+                        </h:form>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </div>
+        <!-- Testfallersteller/ Testfälle Tabelle-->
+        <div style="margin-left: 50px">
+            <h:form id="testfälle"
+                    rendered="#{ticketController.rollenRender.testfallErsteller or ticketController.rollenRender.testManager}">
+                <p:dataTable var="testfall" value="#{ticketController.testfälle}" selectionMode="single"
+                             rowKey="#{testfall.testfallNummer}">
+                    <p:ajax update="testläufe testfälle neuerTestfall" event="rowSelect"
+                            listener="#{ticketController.welchesTicket}"/>
+                    <f:facet name="header">Testfälle zur Anforderung: "<b>#{ticketController.anforderung.text}"</b></f:facet>
+                    <p:column>
+                        <f:facet name="header">Testfallname</f:facet>
+                        <h:form>
+                            <h:outputText value="#{testfall.testfallName}"/>
+                        </h:form>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">Ergebnis</f:facet>
+                        <h:form>
+                            <h:outputText value="#{testfall.ergebnis}"/>
+                        </h:form>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </div>
+        <!-- Testmanager/ Testläufe Tabelle-->
+        <div style="margin-left: 50px">
+            <h:form id="testläufe" rendered="#{ticketController.rollenRender.testManager}">
+                <p:dataTable var="testlauf" value="#{ticketController.testläufe}" selectionMode="single"
+                             rowKey="#{testlauf.testlaufNummer}">
+                    <p:ajax update="neuerTestfall testlauf" event="rowSelect"
+                            listener="#{ticketController.welchesTicket}"/>
+                    <f:facet name="header">Testläufe zum Testfall: "<b>#{ticketController.testfall.testfallName}"</b></f:facet>
+                    <p:column>
+                            <f:facet name="header">Testlaufname</f:facet>
+                            <h:form>
+                            <h:outputText value="#{testlauf.testlaufName}"/>
+                            </h:form>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">Datum des Testlaufs</f:facet>
+                        <h:form>
+                            <h:outputText value="#{testlauf.testlaufDatum}"/>
+                        </h:form>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </div>
+        <!--Tester/ Aufgaben Tabelle für Tester-->
+        <div style="margin-left: 50px">
+            <h:form id="testeraufgaben" rendered="#{ticketController.rollenRender.tester}">
+                <p:dataTable var="testfall" value="#{ticketController.testerAufgaben}" selectionMode="single"
+                             rowKey="#{testfall.testfallNummer}">
+                    <p:ajax update="neuerTestfall" event="rowSelect" listener="#{ticketController.welchesTicket}"/>
+                    <f:facet name="header">Aufgaben für den Tester: <b>#{ticketController.benutzer.vorName}</b></f:facet>
+                    <p:column>
+                        <f:facet name="header">Testfallname</f:facet>
+                        <h:form>
+                            <h:outputText value="#{testfall.testfallName}"/>
+                        </h:form>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">Ergebnis</f:facet>
+                        <h:form>
+                            <h:outputLabel value="#{testfall.ergebnis}"/>
+                        </h:form>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </div>
+    </div>
+</h:body>
+</html>
